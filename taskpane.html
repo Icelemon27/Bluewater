@@ -1,0 +1,150 @@
+<!-- Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT License. -->
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://unpkg.com/@fluentui/web-components/dist/fluent-components.min.css">
+
+      <!-- Select 复选 -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
+    <!-- <script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"></script> -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+    <!-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script> -->
+
+    <!-- Office JavaScript API -->
+    <script type="text/javascript" src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"></script>
+    <link rel="stylesheet" type="text/css" href="styles.css">
+    <!-- 引入 math.js  -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/9.4.4/math.min.js"></script>
+</head>
+
+<body>
+    <!-- <p>This add-in will set cell A1 to the value 'Hello world!'.</p> -->
+    <!-- <button id="helloButton">Say hello</button> -->
+
+    <!-- The following image URL tracks diagnostic data for this sample add-in. Please remove the image tag if you reuse this sample in your own code project. -->
+    <!-- <img src="https://pnptelemetry.azurewebsites.net/pnp-officeaddins/samples/excel-add-in-hello-world-run" /> -->
+
+    <!-- <div id="warningPrompt">
+        <p>在程序运行的过程中不要编辑单元格。</p>
+        <fluent-button id="confirmWarning">确认</fluent-button>
+    </div> -->
+
+    <div id="modalOverlay" class="modal-overlay" style="display: none;"></div>
+
+    <div id="warningPrompt" class="waterfall-container" style="display:none;">
+        <span class="waterfall-message">在程序运行的过程中不要编辑单元格。</span>
+        <div id="progressContainer" class="progress-container" style="display: none;">
+            <div id="progressBar" class="progress-bar"></div>
+        </div>
+        <!-- <div class="button-group">
+            <button id="confirmWarningPrompt" class="button">确认</button>
+        </div> -->
+    </div>
+
+    <!-- <div id="keyWarningContainer" class="waterfall-container" style="display:none;">
+        <span class="waterfall-message">Data Type 一行中必须有一个 Key。</span>
+        <div class="button-group">
+            <button id="confirmKeyWarningButton" class="button">确定</button>
+        </div>
+    </div> -->
+
+    <div id="keyWarningPrompt" class="waterfall-container" style="display:none;">
+        <span class="waterfall-message">Bridge Data工作表第一行只能有一个单元格的值是Key，修改并保留唯一的单元格值为Key。</span>
+        <div class="button-group">
+            <button id="confirmKeyWarning" class="button">确认</button>
+        </div>
+    </div>
+
+    <div id="ResultWarningPrompt" class="waterfall-container" style="display:none;">
+        <span class="waterfall-message">Bridge Data工作表第一行只能有一个单元格的值是Result，修改并保留唯一的单元格值为Result。</span>
+        <div class="button-group">
+            <button id="confirmResultWarning" class="button">确认</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- 提示信息容器 -->
+        <div id="taskPanePrompt" class="prompt-container" style="display: none;">
+            <div id="messageContent"></div>
+            <button id="confirmButton" class="button">确认</button>
+        </div>
+        
+        <div id="waterfallPrompt" class="waterfall-container" style="display:none;">
+            <span class="waterfall-message">是否要重新生成新的 waterfall?</span>
+            <div class="button-group">
+                <button id="confirmWaterfall" class="button">是</button>
+                <button id="cancelWaterfall" class="button">否</button>
+            </div>
+        </div>
+        <!-- 判断数据类型Type是否有变化 -->
+        <div id="dynamicWaterfallPrompt" class="waterfall-container" style="display:none;">
+            <span class="waterfall-message"></span>
+            <div class="button-group">
+                <button id="confirmDynamicWaterfall" class="button">是</button>
+                <button id="cancelDynamicWaterfall" class="button">否</button>
+            </div>
+        </div>
+
+        <div class="button-group">
+            <button id="runProgram" class="button">Waterfall</button>
+            <button id="refreshWaterfall" class="button">Refresh</button>
+        </div>
+        <div class="button-group">
+            <button id="restoreOptions" class="button">恢复选项</button>
+        </div>
+
+        <!-- Dropdown Containers -->
+        <div class="dropdown-wrapper">
+            <div class="dropdown-section">
+                <!-- <label for="dropdown-container1" class="dropdown-label">dropdown-container1</label> -->
+                <div id="dropdown-container1" class="dropdown-container">
+                    <!-- 第一个下拉菜单容器 -->
+                </div>
+            </div>
+            <div class="dropdown-section">
+                <!-- <label for="dropdown-container2" class="dropdown-label">dropdown-container2</label> -->
+                <div id="dropdown-container2" class="dropdown-container">
+                    <!-- 第二个下拉菜单容器 -->
+                </div>
+            </div>
+        </div>
+
+        <div id="logOutput" style="margin-top: 20px; border: 1px solid #ccc; padding: 10px; width: 90%; height: 150px; overflow-y: scroll;">
+            Log Output:
+        </div>
+
+        <div id="prompt" style="display:none;">
+            <p>已存在同名工作表，是否要删除？</p>
+            <button onclick="deleteExistingSheet()">是</button>
+            <button onclick="hidePrompt()">否</button>
+        </div>
+
+        <div id="promptSource" style="display:none;">
+            <p>已存在同名工作表，是否要删除？</p>
+            <button onclick="deleteExistingSheetSource()">是</button>
+            <button onclick="hidePromptSource()">否</button>
+        </div>
+
+        <!-- Cell Selection Section -->
+        <div class="input-section">
+            <h2 class="subtitle">请选择单元格</h2>
+            <input type="text" id="selectedRange" class="input-text" readonly>
+        </div>
+    </div> <!-- 关闭 container -->
+
+    <script src="https://unpkg.com/@fluentui/web-components/dist/fluent-components.min.js"></script>
+    <script src="script.js"></script>
+
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+</body>
+
+
+</html>

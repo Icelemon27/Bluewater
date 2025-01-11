@@ -1,0 +1,600 @@
+body, html {
+  width: 100%;
+  height: 100%; /* 确保填满整个视口，也可以设置为 min-height: 100% */
+  margin: 0;
+  padding: 0;
+  background-color: #f4f4f4; /* 确保整个页面背景色一致 */
+  box-sizing: border-box;
+  /* overflow-x: hidden; 禁用水平滚动 */
+}
+
+.container {
+  display: flex;
+  flex-wrap: nowrap; /* 子元素在一行排列，不换行 */
+  flex-direction: column; /* 垂直排列子元素 */
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  width: 100%;
+  
+  max-width: 100vw; /* 可选：设置最大宽度，避免过宽布局 */
+  min-width: 0px; /* 设置最小宽度，保证可用性 */
+  margin: auto;
+  box-sizing: border-box; /*包含 padding 在内计算宽度,没有这一步会导致左右横向宽度适应有问题，会需要左右滑动横向拉滚动条*/
+  overflow-x: hidden; /* 防止水平溢出 */
+  /* overflow: hidden;  防止内容溢出容器 */
+}  
+
+/* 禁用其他容器样式 */
+.container.disabled > *:not(#keyWarningPrompt):not(#ResultWarningPrompt):not(#waterfallPrompt):not(#dynamicWaterfallPrompt) {
+  pointer-events: none; /* 禁止交互 */
+  opacity: 0.5; /* 降低不活跃内容的透明度 */
+}
+
+.prompt-container {
+  display: flex;
+  flex-wrap: nowrap; /* 子元素在一行排列，不换行 */
+  background-color: #f9f9f9;
+  border: 2px solid #0078D4;
+  border-radius: 8px;
+  padding: 15px;
+  font-size: 14px;
+  font-weight: bold;
+  text-align: center;
+  color: #333;
+  margin-bottom: 15px;
+  overflow-x: hidden; /* 防止水平溢出 */
+  min-width: 100px;
+  white-space: nowrap; /* 禁止文字换行 */
+}
+
+
+/* 确保提示框保留交互 */
+#keyWarningPrompt,
+#ResultWarningPrompt,
+#waterfallPrompt  {
+  pointer-events: auto; /* 确保交互启用 */
+  opacity: 1; /* 保证完全显示 */
+  z-index: 1100; /* 确保提示框在遮罩层之上 */
+  position: relative; /* 保证定位层级 */
+}
+
+h1 {
+  color: #333;
+  text-align: center;
+}
+
+label {
+  margin-bottom: 10px;
+  display: block;
+}
+
+select, .checkbox, button {
+  width: 100%;
+  padding: 10px;
+  margin-top: 10px;
+}
+
+button {
+  background-color: #0078D7;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+
+
+/* ----------------new-------------------------- */
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* 半透明黑色背景 */
+  z-index: 1000; /* 确保在最顶层 */
+  display: none; /* 默认隐藏 */
+  /* pointer-events: none;  避免直接与遮罩层交互 */
+}
+
+.waterfall-container {
+  display: flex;
+  flex-direction: column; /* 子元素垂直排列 */
+  gap: 10px; /* 间距 */
+  padding: 20px; /* 添加内边距，让内容远离边框 */
+  border: 2px solid #0078D4; /* 添加边框，颜色与按钮一致 */
+  border-radius: 8px; /* 圆角边框，提升视觉效果 */
+  background-color: #f9f9f9; /* 添加背景颜色，提升可读性 */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* 添加阴影，增强层次感 */
+  z-index: 1100; /* 确保提示框高于遮罩层 */
+  position: relative; /* 确保提示框定位正确 */
+}
+
+.waterfall-message {
+  font-size: 14px; /* 合适的字体大小 */
+  font-weight: bold; /* 加粗字体 */
+  text-align: center; /* 居中对齐文字 */
+  margin-bottom: 10px; /* 与按钮组的间距 */
+  color: #333; /* 合适的文字颜色 */
+  padding: 20px; /* 添加内边距，让内容远离边框 */
+  box-sizing: border-box; /* 包括 padding 和 border 在内计算宽度 */
+}
+
+.waterfall-message a {
+  color: #0078D4;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.waterfall-message a:hover {
+  color: #0056b3;
+  text-decoration: none;
+}
+
+
+.button-group {
+  display: flex;
+  flex-wrap: nowrap; /* 子元素在一行排列，不换行 */
+  gap: 10px;
+  margin-bottom: 20px;
+  overflow-x: hidden;         /* 隐藏溢出的内容 */
+}
+
+.button {
+  display: flex;
+  flex-wrap: nowrap; /* 子元素在一行排列，不换行 */
+  flex-shrink: 0;
+  white-space: nowrap; /* 禁止文字换行 */
+  align-items: center; /* 子元素垂直居中 */
+  justify-content: center; /* 水平居中 */
+  min-width: 70px; /* 确保最小宽度包括 padding */
+  flex: 1; /* 确保按钮占满可用空间 */
+  background-color: #0078D4;
+  color: #ffffff;
+  padding: 10px 10px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 10px;
+  font-weight: 600;
+  transition: background-color 0.3s ease;
+  overflow-x: hidden;         /* 隐藏溢出的内容 */
+  text-overflow: clip;
+  direction: rtl; /* 从右边开始溢出 */
+  box-sizing: border-box; /* 包括 padding 和 border 在内计算宽度 */
+}
+
+.input-text {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #8a8886;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.input-section {
+  margin-bottom: 20px;
+}
+
+
+
+
+
+/* ---------------检测是否有重复的Key值------------------- */
+#keyWarningPrompt {
+  background-color: #ffdddd; /* 淡红色背景表示警告 */
+  border: 2px solid #ff0000; /* 红色边框表示警告 */
+}
+
+#keyWarningPrompt p {
+  color: #d8000c; /* 深红色的文本颜色 */
+}
+
+#confirmKeyWarning {
+  background-color: #0078D4;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+#confirmKeyWarning:hover {
+  background-color: #0056b3;
+}
+
+/* ---------------检测是否有重复的Key值------------------- */
+
+/* ---------------检测是否有重复的Result值------------------- */
+#ResultWarningPrompt {
+  background-color: #ffdddd; /* 淡红色背景表示警告 */
+  border: 2px solid #ff0000; /* 红色边框表示警告 */
+}
+
+#ResultWarningPrompt p {
+  color: #d8000c; /* 深红色的文本颜色 */
+}
+
+#confirmResultWarning {
+  background-color: #0078D4;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+#confirmResultWarning:hover {
+  background-color: #0056b3;
+}
+
+/* ---------------检测是否有重复的Result值------------------- */
+
+/* ---------------------检测是否有Key----------------------- */
+/* 
+#keyWarningContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 20px;
+  border: 2px solid #ff0000;
+  border-radius: 8px;
+  background-color: #ffdddd;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  z-index: 1100;
+  position: relative;
+  text-align: center;
+}
+
+#keyWarningContainer .waterfall-message {
+  font-size: 14px;
+  font-weight: bold;
+  color: #d8000c;
+  margin-bottom: 10px;
+}
+
+#keyWarningContainer .button {
+  background-color: #0078D4;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+#keyWarningContainer .button:hover {
+  background-color: #0056b3;
+} */
+
+
+
+/* ---------------------检测是否有Key----------------------- */
+
+
+/* ---------------警告不要修改excel------------------- */
+#warningPrompt {
+  background-color: #ffdddd; /* 淡红色背景表示警告 */
+  border: 1px solid #ff0000; /* 红色边框表示警告 */
+
+}
+
+/* warningPrompt 的消息样式 */
+#warningPrompt .waterfall-message {
+  color: #d8000c; /* 深红色的文本颜色 */
+}
+
+#confirmWarningPrompt {
+  background-color: #0078D4;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+#confirmWarningPrompt:hover {
+  background-color: #0056b3;
+}
+/* ---------------警告不要修改excel------------------- */
+
+
+/*------------------新的下拉菜单-----------------------*/
+
+/* 容器标签样式 */
+.container-label {
+  font-weight: bold;
+  font-size: 14px;
+  margin-bottom: 3px;
+}
+
+.dropdown-wrapper {
+  display: flex;
+  flex-wrap: nowrap;  /* 不允许内容换行 */
+  width: 100%; /* 使容器占满页面宽度 */
+  gap: 5px;
+  min-width: 30px;
+  overflow-x: hidden; /* 隐藏水平溢出内容 */
+  /* flex: 1 1 calc(50% - 10px);  */
+}
+
+.dropdown-section {
+  display: flex;
+  flex-direction: column;
+  gap:5px;
+  /* align-items: center; */
+  /* width: calc(50% - 5px); 平分宽度并减去间距的一半 */
+  flex: 1;
+  
+  overflow-x: hidden; /* 隐藏水平溢出内容 */
+  min-width: 100px; 
+}
+
+.dropdown-label {
+  display: flex;
+  flex-wrap: nowrap;  /* 不允许内容换行 */
+  flex: 1;
+  /* font-weight: bold; */
+  font-size: 10px;
+  margin: 0px;
+  text-align: center; /* 确保文字在标签内居中 */
+  width: 100%; /* 使标签的宽度与下拉菜单容器一致 */
+  min-width: 0;
+  white-space: nowrap;      /* 防止文本换行 */
+  overflow-x: hidden;         /* 隐藏溢出的内容 */
+  text-overflow: clip;      /* 超出部分直接裁剪，不显示省略号 */
+  flex-shrink: 1;           /* 允许元素缩小 */
+  /* flex: 1 1 calc(50% - 10px);  */
+}
+
+#dropdown-container {
+  display: flex;
+  flex: 1;
+  position: relative;
+  min-width: 0;
+  gap: 5px;
+  /* flex: 1 1 calc(50% - 10px);  */
+}
+
+.custom-select {
+  display: flex;
+  flex-wrap: nowrap;
+  position: relative;
+  /* width: 250px; */
+  width: 100%; /* 使选择框在容器中占满宽度 */
+  margin-bottom: 5px;
+  box-sizing: border-box;
+  min-width: 50px;
+  justify-content: flex-start; /* 顶端对齐 */
+  flex-direction: column; /* 垂直排列子元素 */
+  /* max-width: 30px; */
+  /* flex: 1 1 calc(50% - 10px);  */
+  /* 确保没有设置 z-index，避免创建新的堆叠上下文 */
+  
+}
+
+.select-box {
+  display: flex;
+  flex-wrap: nowrap;
+  flex: 1;
+  /* width: 100%; */
+  /* padding: 8px; */
+  box-sizing: border-box;
+  cursor: pointer;
+  min-width: 0px;
+  font-size: 10px;
+  /*border: none;  移除边框 */
+  /*box-shadow: none;  移除阴影 */
+  /*outline: none;  移除聚焦样式 */
+  /* flex: 1 1 calc(50% - 10px);  */
+  /* 确保没有设置 z-index */
+  min-width: 50px; 
+  gap: 0px;
+  padding: 1px 1px; /* 减少上下内边距 */
+  margin: 0px 0;      /* 设置上下 margin */
+}
+
+.dropdown {
+  display: flex;
+  flex-direction: column; /* 垂直排列子元素 */
+  gap: 3px;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  max-height: 0px;
+  
+  /* overflow: hidden; */
+  background-color: #fff; /* 确保背景色为白色，不透明 */
+  border: 1px solid #ccc;
+  transition: max-height 0.3s ease;
+  min-width: 0px;
+  overflow: hidden; /* 隐藏水平溢出内容 */
+  /*justify-content: flex-start;  顶端对齐 */
+  box-sizing: border-box; /* 确保边框包含在宽度内 */
+  visibility:hidden;
+  /* flex: 1 1 calc(50% - 10px);  */
+  /* 移除 z-index，以便在 JavaScript 中动态设置 */
+  /* z-index: 1000; 设置较高的 z-index，确保下拉菜单在最上层 */
+}
+
+.dropdown.show {
+  max-height: none;
+  /* overflow-y: auto; */
+  min-width: 0px;
+  /* flex: 1 1 calc(50% - 10px);  */
+  /* 不需要在这里设置 z-index */
+  /* z-index: 1000; /* 确保展开状态时在最上层 */
+}
+
+.dropdown-header {
+  display: flex;
+  flex: 1;
+  position: sticky;/* 或者改为 fixed */
+  gap: 2px; /* 两个按钮间的距离 */
+  padding: 1px 1px; /* 减少上下内边距 */
+  margin: 0px 0;      /* 设置上下 margin */
+  top: 0;
+  flex-wrap: nowrap;  /* 不允许内容换行 */
+  justify-content: space-between;
+  align-items: center; /* 垂直居中 */
+  padding: 0 0px; /* 保持左右内边距 */
+  border-bottom: 1px solid #ccc;
+  background-color: #f9f9f9;
+  height: 40px;
+  box-sizing: border-box;
+  /* min-width: 0px; */
+  /*overflow-x: hidden;  隐藏水平溢出内容 */
+  /* flex: 1 1 calc(50% - 10px);  */
+}
+
+.confirm-btn,
+.cancel-btn {
+  flex-wrap: nowrap;  /* 不允许内容换行 */
+  gap: 10px;
+  padding: 3px 3px; /* 减少上下内边距 */
+  margin: 1px 5px;      /* 设置上下 左右 margin */
+  cursor: pointer;
+  border: none;
+  background-color: #5D8FE9; /* 使用淡灰色背景 */
+  font-size: 10px;
+  flex: 1 1 0%; /* 允许按钮等比例缩小和放大 */
+  text-align: center;
+  color: #FFFFFF; /* 深灰色文字 */
+  border-radius: 4px; /* 可选，增加圆角 */
+  overflow-x: hidden; /* 隐藏水平溢出内容 */
+  white-space: nowrap;      /* 防止文本换行 */
+  overflow: hidden;         /* 隐藏溢出的内容 */
+  text-overflow: clip;      /* 超出部分直接裁剪，不显示省略号 */
+  flex-shrink: 1; /* 防止按钮缩小 */
+  min-width: 50px; /* 设置按钮的最小宽度 */
+  position: relative;
+
+}
+
+.confirm-btn[disabled] {
+  cursor: not-allowed;
+  background-color: #cccccc; /* 禁用状态的灰色，与按钮的灰色区分 */
+  color: #999; /* 禁用状态的文字颜色 */
+}
+
+.confirm-btn:hover:not([disabled]),
+.cancel-btn:hover {
+  background-color: #6E82E8; /* 悬停时的背景颜色 */
+}
+
+.options-list {
+  display: flex;
+  flex-direction: column; /* 垂直排列子元素 */
+  flex: 1 1 auto;
+  overflow-y: auto; /* 仅在内容溢出时显示滚动条 */
+  gap: 0px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  min-width: 0px;
+  box-sizing: content-box; /* 确保 padding 不影响宽度计算 */
+  padding-right: 0px;  /* 预留滚动条的空间，避免出现滚动条闪烁  */
+  height:auto;
+  
+}
+
+.options-list li {
+  display: flex;
+  flex-wrap: nowrap;
+  flex-direction: column; /* 垂直排列子元素 */
+  gap: 0px;
+  padding: 0px 0px; /* 减少上下内边距 */
+  margin: 1px 1;      /* 设置上下 margin */
+  height: auto;     /* 根据内容自动调整高度 */
+  box-sizing: border-box;
+  cursor: pointer; /* 整个选项区域均可点击 */
+  min-width: 0px;
+  
+  /* flex: 1 1 calc(50% - 10px);  */
+}
+
+.options-list li:hover {
+  background-color: #f0f0f0; /* 悬停时的背景颜色 */
+}
+
+.options-list label {
+  /* display: flex; */
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  cursor: pointer; /* 添加鼠标指针样式 */
+  width: 100%; /* 确保悬停效果覆盖整个选项区域 */
+  min-width: 0px;
+  font-size: 10px;
+  gap: 0px;
+  padding: 1px 1px; /* 减少上下内边距 */
+  margin: 1px 1px;      /* 设置上下 margin */
+  /* box-sizing: border-box; */
+  /* flex: 1 1 calc(50% - 10px);  */
+}
+
+.option-checkbox {
+  margin-right: 4px;
+}
+
+/* 确保下方的选择框及其父元素的 z-index 较低 */
+/* .custom-select:nth-child(n+2) {
+  position: relative; */
+  /*z-index: 1;  将下方选择框的 z-index 设置为较低 */
+/* } */
+
+/* 在屏幕宽度小于600px时，改为单列布局 */
+/* @media (max-width: 300px) {
+  .dropdown-section {
+      flex: 1 1 100%;
+  }
+} */
+
+/* -------------进度条---------------- */
+
+.progress-container {
+  width: 100%;
+  background-color: #f3f3f3;
+  border-radius: 8px;
+  margin: 10px 0;
+  overflow: hidden;
+  height: 20px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.progress-bar {
+  height: 100%;
+  width: 0;
+  background-color: #4caf50;
+  text-align: center;
+  line-height: 20px;
+  color: white;
+  transition: width 0.4s;
+}
+
+/* ------------进度条 End------------- */
+
+/* ------------初始Bridge Data形成时候提示------------- */
+#confirmButton {
+  background-color: #0078D4;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+#confirmButton:hover {
+  background-color: #0056b3;
+}
+/* ------------初始Bridge Data形成时候提示 End------------- */
