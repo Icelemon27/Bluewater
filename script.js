@@ -5163,7 +5163,6 @@ async function DrawBridge() {
     let StartRange = BridgeRange.getCell(0, 0);
     let dataRange = StartRange.getOffsetRange(0, 2).getAbsoluteResizedRange(BridgeRange.rowCount, 4);
 
-
     //图形的数据范围
     let xAxisRange = StartRange.getAbsoluteResizedRange(BridgeRange.rowCount, 1); // 横轴标签范围
     let BlankRange = StartRange.getOffsetRange(0, 2).getAbsoluteResizedRange(BridgeRange.rowCount, 1);
@@ -5315,13 +5314,14 @@ async function DrawBridge() {
     console.log("DrawBridge 9");
     // 设置横轴标签
     // chart.axes.categoryAxis.setCategoryNames(xAxisRange.values);
+    chart.axes.categoryAxis.setCategoryNames(xAxisRange);
 
     // 将轴标签位置设置为底部
-    //chart.axes.valueAxis.position = "Automatic"; // 这里设置为Minimun 也只能在0轴的位置，不能是最低的负值下方
-    // let valueAxis = chart.axes.valueAxis;
-    // valueAxis.load("minimum");
+    chart.axes.valueAxis.position = "Automatic"; // 这里设置为Minimun 也只能在0轴的位置，不能是最低的负值下方
+    let valueAxis = chart.axes.valueAxis;
+    valueAxis.load("minimum");
     await context.sync();
-    // chart.axes.valueAxis.setPositionAt(valueAxis.minimum);
+    chart.axes.valueAxis.setPositionAt(valueAxis.minimum);
 
     // 获取图表的数据系列
     console.log("DrawBridge 10");
