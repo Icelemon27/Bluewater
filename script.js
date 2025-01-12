@@ -5318,8 +5318,8 @@ async function DrawBridge() {
 
     // 将轴标签位置设置为底部
     //chart.axes.valueAxis.position = "Automatic"; // 这里设置为Minimun 也只能在0轴的位置，不能是最低的负值下方
-    let valueAxis = chart.axes.valueAxis;
-    valueAxis.load("minimum");
+    // let valueAxis = chart.axes.valueAxis;
+    // valueAxis.load("minimum");
     await context.sync();
     // chart.axes.valueAxis.setPositionAt(valueAxis.minimum);
 
