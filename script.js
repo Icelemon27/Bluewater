@@ -5388,8 +5388,8 @@ async function DrawBridge() {
     console.log("DrawBridge 10.6");
 
     seriesD.points.load("items");
-    seriesE.points.load("items");
-    seriesF.points.load("items");
+    // seriesE.points.load("items");
+    // seriesF.points.load("items");
 
     await context.sync();
     console.log("DrawBridge 10.6.1");
