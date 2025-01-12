@@ -5387,7 +5387,7 @@ async function DrawBridge() {
     }
     console.log("DrawBridge 10.6");
 
-    seriesD.points.load("items");
+    // seriesD.points.load("items");
     // seriesE.points.load("items");
     // seriesF.points.load("items");
 
